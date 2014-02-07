@@ -7,9 +7,10 @@
 
    		<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 		 <?php if ( has_post_thumbnail() ) { ?>
-         <div class="gridly-image"><a href="<?php the_permalink() ?>"><?php the_post_thumbnail( 'summary-image' );  ?></a></div>
-          <div class="gridly-category"><p><?php the_category(', ') ?></p></div>
-       
+          <div class="gridly-image"><a href="<?php the_permalink() ?>"><?php the_post_thumbnail( 'summary-image' );  ?></a></div>
+          <?php if ( get_the_tags() ) { ?>
+            <div class="gridly-category"><p><?php the_tags(); ?></p></div>
+          <?php } ?>
 		  <?php } ?>
        			<div class="gridly-copy"><h2><a href="<?php the_permalink() ?>"><?php the_title(); ?></a></h2>
                 <p class="gridly-date"><?php the_time(get_option('date_format')); ?>  </p>
