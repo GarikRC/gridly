@@ -1,22 +1,22 @@
 <?php
-add_action('admin_menu', 'create_theme_options_page');
-add_action('admin_init', 'register_and_build_fields');
+add_action('admin_menu', 'gridly_create_theme_options_page');
+add_action('admin_init', 'gridly_register_and_build_fields');
 
-function create_theme_options_page() {
-	add_theme_page('Gridly Options', 'Gridly Options', 'administrator', 'gridly_admin', 'options_page_fn');
+function gridly_create_theme_options_page() {
+	add_theme_page('Gridly Options', 'Gridly Options', 'edit_theme_options', 'gridly_admin', 'gridly_options_page_fn');
 }
 
-function register_and_build_fields() {
-	register_setting('plugin_options', 'plugin_options', 'validate_setting');
-	add_settings_section('main_section', 'Main Settings', 'section_cb', __FILE__);
+function gridly_register_and_build_fields() {
+	register_setting('plugin_options', 'plugin_options', 'gridly_validate_setting');
+	add_settings_section('main_section', 'Main Settings', 'gridly_section_cb', __FILE__);
 	
-	add_settings_field('gridly_logo', 'Logo:', 'logo_setting', __FILE__, 'main_section'); // LOGO
-	add_settings_field('gridly_color_scheme', 'Color Scheme:', 'color_scheme_setting', __FILE__, 'main_section');
-	add_settings_field('gridly_responsive', 'Responsive Layout:', 'responsive_setting', __FILE__, 'main_section');
+	add_settings_field('gridly_logo', 'Logo:', 'gridly_logo_setting', __FILE__, 'main_section'); // LOGO
+	add_settings_field('gridly_color_scheme', 'Color Scheme:', 'gridly_color_scheme_setting', __FILE__, 'main_section');
+	add_settings_field('gridly_responsive', 'Responsive Layout:', 'gridly_responsive_setting', __FILE__, 'main_section');
 }
 
-function options_page_fn() {
-	if($_REQUEST['settings-updated']){
+function gridly_options_page_fn() {
+	if( isset( $_REQUEST['settings-updated'] ) && $_REQUEST['settings-updated'] ) {
 		echo "<div class='updated'><p>Updated</p></div>";
 	}
 ?>
@@ -39,41 +39,41 @@ function options_page_fn() {
 
 
 // Color Scheme
-function color_scheme_setting() {
+function gridly_color_scheme_setting() {
 	$options = get_option('plugin_options');
 	$items = array("light", "dark", "custom");
 
 	echo "<select name='plugin_options[gridly_color_scheme]'>";
 	foreach ($items as $item) {
 		$selected = ( $options['gridly_color_scheme'] === $item ) ? 'selected = "selected"' : '';
-		echo "<option value='$item' $selected>$item</option>";
+		echo '<option value="' . esc_attr( $item ) . '" ' . $selected . '>' . esc_html( $item ) . '</option>';
 	}
 	echo "</select>";
 }
 
 // Responsive  Setting
-function responsive_setting() {
+function gridly_responsive_setting() {
 	$options = get_option('plugin_options');
 	$items = array("yes", "no");
 
 	echo "<select name='plugin_options[gridly_responsive]'>";
 	foreach ($items as $item) {
 		$selected = ( $options['gridly_responsive'] === $item ) ? 'selected = "selected"' : '';
-		echo "<option value='$item' $selected>$item</option>";
+		echo '<option value="' . esc_attr( $item ) . '" ' . $selected . '>' . esc_html( $item ) . '</option>';
 	}
 	echo "</select>";
 }
 
 // Logo
-function logo_setting() {
+function gridly_logo_setting() {
 	echo '<input type="file" name="gridly_logo" />';
 	$options = get_option('plugin_options');
 	if($options['gridly_logo'] != ''){
-		echo "<br/><img src='{$options['gridly_logo']}' />";
+		echo '<br/><img src="' . esc_url( $options['gridly_logo'] ) . '" />';
 	}
 }
 
-function validate_setting($plugin_options) {
+function gridly_validate_setting($plugin_options) {
 	$keys = array_keys($_FILES);
 	$i = 0;
 
@@ -85,16 +85,16 @@ function validate_setting($plugin_options) {
 				$override = array('test_form' => false);
 				$file = wp_handle_upload($image, $override);
 
-				$plugin_options[$keys[$i]] = $file['url'];
+				$plugin_options[$keys[$i]] = esc_url( $file['url'] );
 			} else {
 				$options = get_option('plugin_options');
-				$plugin_options[$keys[$i]] = $options[$logo];
+				$plugin_options[$keys[$i]] = esc_url( $options[$logo] );
 				wp_die('No image was uploaded.');
 			}
 		} else {
 			// else, retain the image that's already on file.
 			$options = get_option('plugin_options');
-			$plugin_options[$keys[$i]] = $options[$keys[$i]];
+			$plugin_options[$keys[$i]] = esc_url( $options[$keys[$i]] );
 		}
 		$i++;
 	}
@@ -102,12 +102,10 @@ function validate_setting($plugin_options) {
 	return $plugin_options;
 }
 
-function section_cb() {}
+function gridly_section_cb() {}
 
 // Add stylesheet
-add_action('admin_head', 'admin_register_head');
-
-function admin_register_head() {    
-	$url = get_template_directory_uri() . '/options/options_page.css';
-	echo "<link rel='stylesheet' href='$url' />\n";
+add_action('admin_enqueue_scripts', 'gridly_admin_style');
+function gridly_admin_style() {
+	wp_enqueue_style( 'gridly-admin', get_template_directory_uri() . '/options/potions_page.css', array(), '02072014' );
 }
