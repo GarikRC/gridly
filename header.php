@@ -30,7 +30,7 @@
                  <?php if ($gridly_logo != '') {?>
                  	 <img src="<?php echo esc_url( $gridly_logo ); ?>" alt="<?php bloginfo('sitename'); ?>">
                  <?php } else { ?>
-                       <img src="<?php echo get_template_directory_uri(); ?>/images/light/logo.png" alt="<?php bloginfo('sitename'); ?>">
+                       <?php bloginfo( 'name' ); ?>
                  <?php } ?>
             </a>
             
