@@ -107,3 +107,10 @@
   .bypostauthor  	{}
   blockquote 		{ font-size:2em; line-height:23px; color:#000; margin-left:20px; border-left: 1px dotted #999; padding-left:25px; margin-top:15px; margin-bottom:15px; }
 /* end of css file */
+
+.home div.sharedaddy .sd-content li {
+  margin: 0 !important;
+}
+.home div.sharedaddy .sd-content {
+  width: 100%;
+}
